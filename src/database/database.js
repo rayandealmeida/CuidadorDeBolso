@@ -2,9 +2,9 @@ import * as SQLite from 'expo-sqlite';
 
 export const inicializarBanco = async () => {
   try {
-    const db = await SQLite.openDatabaseAsync('cuidador.db');
+    // 1. Mudado para cuidador_v3.db
+    const db = await SQLite.openDatabaseAsync('cuidador_v3.db');
     
-    // Adicionados os campos: dias_tratamento e tipo_ingestao
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS medicamentos (
@@ -26,7 +26,8 @@ export const inicializarBanco = async () => {
 };
 
 export const obterConexaoBanco = async () => {
-  return await SQLite.openDatabaseAsync('cuidador.db');
+  // 2. Mudado para cuidador_v3.db 
+  return await SQLite.openDatabaseAsync('cuidador_v3.db');
 };
 
 // CREATE - Incluindo os novos campos
