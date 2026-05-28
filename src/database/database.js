@@ -1,11 +1,10 @@
 import * as SQLite from 'expo-sqlite';
 
-// Inicializa o banco abrindo a conexão de forma direta
 export const inicializarBanco = async () => {
   try {
     const db = await SQLite.openDatabaseAsync('cuidador.db');
     
-    // Cria a tabela de medicamentos se ela ainda não existir
+    // Adicionados os campos: dias_tratamento e tipo_ingestao
     await db.execAsync(`
       PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS medicamentos (
@@ -14,28 +13,29 @@ export const inicializarBanco = async () => {
         dosagem TEXT NOT NULL,
         horario TEXT NOT NULL,
         instrucoes TEXT,
+        dias_tratamento TEXT,
+        tipo_ingestao TEXT,
         status INTEGER DEFAULT 0
       );
     `);
-    console.log("Banco de dados inicializado com sucesso!");
+    console.log("Banco de dados atualizado com sucesso!");
     return db;
   } catch (error) {
     console.error("Erro ao inicializar o banco:", error);
   }
 };
 
-// Abre e retorna a instância do banco para operações rápidas
 export const obterConexaoBanco = async () => {
   return await SQLite.openDatabaseAsync('cuidador.db');
 };
 
-// 1. CREATE
-export const adicionarMedicamento = async (nome, dosagem, horario, instrucoes) => {
+// CREATE - Incluindo os novos campos
+export const adicionarMedicamento = async (nome, dosagem, horario, instrucoes, dias_tratamento, tipo_ingestao) => {
   const db = await obterConexaoBanco();
   try {
     const resultado = await db.runAsync(
-      'INSERT INTO medicamentos (nome, dosagem, horario, instrucoes, status) VALUES (?, ?, ?, ?, 0);',
-      [nome, dosagem, horario, instrucoes]
+      'INSERT INTO medicamentos (nome, dosagem, horario, instrucoes, dias_tratamento, tipo_ingestao, status) VALUES (?, ?, ?, ?, ?, ?, 0);',
+      [nome, dosagem, horario, instrucoes, dias_tratamento, tipo_ingestao]
     );
     return resultado.lastInsertRowId;
   } catch (error) {
@@ -43,7 +43,7 @@ export const adicionarMedicamento = async (nome, dosagem, horario, instrucoes) =
   }
 };
 
-// 2. READ
+// Leitura - READ
 export const listarMedicamentos = async () => {
   const db = await obterConexaoBanco();
   try {
@@ -54,7 +54,7 @@ export const listarMedicamentos = async () => {
   }
 };
 
-// 3. UPDATE
+// UPDATE STATUS (Tomado/Pendente)
 export const alternarStatusMedicamento = async (id, statusAtual) => {
   const db = await obterConexaoBanco();
   const novoStatus = statusAtual === 0 ? 1 : 0;
@@ -66,7 +66,21 @@ export const alternarStatusMedicamento = async (id, statusAtual) => {
   }
 };
 
-// 4. DELETE
+// UPDATE DADOS (Novo: Para editar as informações do remédio)
+export const atualizarMedicamentoCompleto = async (id, nome, dosagem, horario, instrucoes, dias_tratamento, tipo_ingestao) => {
+  const db = await obterConexaoBanco();
+  try {
+    await db.runAsync(
+      'UPDATE medicamentos SET nome = ?, dosagem = ?, horario = ?, instrucoes = ?, dias_tratamento = ?, tipo_ingestao = ? WHERE id = ?;',
+      [nome, dosagem, horario, instrucoes, dias_tratamento, tipo_ingestao, id]
+    );
+    return true;
+  } catch (error) {
+    console.error("Erro ao atualizar dados do medicamento:", error);
+  }
+};
+
+// DELETE
 export const eliminarMedicamento = async (id) => {
   const db = await obterConexaoBanco();
   try {
