@@ -47,3 +47,17 @@ Para rodar o projeto localmente em modo de desenvolvimento, siga os passos abaix
 1. Clone o repositório para sua máquina:
    ```bash
    git clone [https://github.com/SEU_USUARIO_DO_GITHUB/CuidadorDeBolso.git](https://github.com/SEU_USUARIO_DO_GITHUB/CuidadorDeBolso.git)
+
+## 📥 Instalação das Dependências
+
+Caso precise instalar manualmente as dependências do projeto, execute os comandos abaixo no terminal da raiz do projeto:
+
+```bash
+# 1. Instalar o Core do React Navigation e suporte a telas
+npm install @react-navigation/native react-native-screens react-native-safe-area-context
+
+# 2. Instalar a navegação por Abas (Tab Navigation)
+npm install @react-navigation/bottom-tabs
+
+# 3. Instalar o Banco de Dados SQLite (Versão compatível com Expo SDK 54)
+npx expo install expo-sqlite
